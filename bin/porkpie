@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+THIS_FILE = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+$LOAD_PATH << File.dirname(THIS_FILE) + '/../lib'
+
+require 'rubygems'
+require 'porkpie'
+require 'optparse'
+
+options = OptionParser.new do |opts|
+  opts.banner = "Usage: porkpie [options]"
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on("--host HOST", "listen on HOST (default: 127.0.0.1)") { |host|
+    Porkpie::Config.host = host
+  }
+
+  opts.on("--port PORT", "listen on PORT (default: 5432)") { |port|
+    Porkpie::Config.port = port
+  }
+
+  opts.on("--pid-file PATH", "pid file PATH (default: /var/run/porkpie.pid)") { |path|
+    Porkpie::Config.pid_file = path
+  }
+
+  opts.on("--log-file PATH", "log file PATH") { |path|
+    Porkpie::Config.log_file = path
+  }
+
+  opts.on("--daemonize", "daemonize on launch") { |path|
+    Porkpie::Config.daemonize = true
+  }
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    abort
+  end
+end
+
+options.parse!(ARGV)
+
+Porkpie::Server.run
